@@ -3,3 +3,6 @@
 
 # DSC
 *.mof
+
+# TEST
+TestResults_*
