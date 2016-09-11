@@ -12,7 +12,7 @@
 RootModule = 'BlueShellUtils.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.0.1'
+ModuleVersion = '0.0.2'
 
 # ID used to uniquely identify this module
 GUID = 'd105543b-38a6-4301-832a-441da25139e5'
