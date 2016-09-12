@@ -22,6 +22,7 @@ Describe "BlueShellUtils Module PS$PSVersion" {
             $Module.Name | Should be $ModuleName
             $Commands = $Module.ExportedCommands.Keys
             $Commands -contains 'Invoke-ProcessHelper' | Should Be $True
+            $Commands -contains 'Copy-RemoteItemLocally' | Should Be $True
         }
     }
 }

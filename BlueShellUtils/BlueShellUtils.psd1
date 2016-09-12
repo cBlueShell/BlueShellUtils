@@ -66,7 +66,7 @@ FormatsToProcess = 'BlueShellUtils.Format.ps1xml'
 # NestedModules = @()
 
 # Functions to export from this module
-FunctionsToExport = @('Invoke-ProcessHelper')
+FunctionsToExport = @('Copy-RemoteItemLocally','Invoke-ProcessHelper')
 
 # Cmdlets to export from this module
 # CmdletsToExport = '*'
