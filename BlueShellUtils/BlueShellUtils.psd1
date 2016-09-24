@@ -66,7 +66,7 @@ FormatsToProcess = 'BlueShellUtils.Format.ps1xml'
 # NestedModules = @()
 
 # Functions to export from this module
-FunctionsToExport = @('Copy-RemoteItemLocally','Expand-ZipFile','Get-JavaProperties','Invoke-Batch','Invoke-ProcessHelper','Remove-ItemBackground','Set-JavaProperties')
+FunctionsToExport = @('Copy-RemoteItemLocally','Expand-ZipFile','Get-CredentialBaseName','Get-JavaProperties','Get-UserBaseName','Invoke-Batch','Invoke-ProcessHelper','Remove-ItemBackground','Set-JavaProperties')
 
 # Cmdlets to export from this module
 # CmdletsToExport = '*'
@@ -104,7 +104,7 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = 'Adds Invoke-Batch cmdlet'
+        ReleaseNotes = 'Adds Invoke-Batch, Get-CredentialBaseName, and Get-UserBaseName CmdLets'
 
     } # End of PSData hashtable
 

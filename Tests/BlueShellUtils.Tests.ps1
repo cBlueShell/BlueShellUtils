@@ -24,6 +24,8 @@ Describe "BlueShellUtils Module PS$PSVersion" {
             $Commands -contains 'Invoke-ProcessHelper' | Should Be $True
             $Commands -contains 'Invoke-Batch' | Should Be $True
             $Commands -contains 'Copy-RemoteItemLocally' | Should Be $True
+            $Commands -contains 'Get-CredentialBaseName' | Should Be $True
+            $Commands -contains 'Get-UserBaseName' | Should Be $True
             $Commands -contains 'Get-JavaProperties' | Should Be $True
             $Commands -contains 'Set-JavaProperties' | Should Be $True
             $Commands -contains 'Expand-ZipFile' | Should Be $True
