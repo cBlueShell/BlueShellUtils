@@ -26,6 +26,7 @@ Describe "BlueShellUtils Module PS$PSVersion" {
             $Commands -contains 'Get-JavaProperties' | Should Be $True
             $Commands -contains 'Set-JavaProperties' | Should Be $True
             $Commands -contains 'Expand-ZipFile' | Should Be $True
+            $Commands -contains 'Remove-ItemBackground' | Should Be $True
         }
     }
 }
@@ -59,6 +60,20 @@ Describe "Expand-ZipFile PS$PSVersion" {
             $x = Expand-ZipFile "$PSScriptRoot\TestData\testfile.zip" -Verbose
             Test-Path("$x\testfile.txt") | Should Be $True
             Remove-Item "$x\testfile.txt" -Force -Confirm:$False
+        }
+    }
+}
+
+Describe "Remove-ItemBackground PS$PSVersion" {
+    InModuleScope $ModuleName {
+        It 'Should remove a directory and its content in the background' {
+            $newDir = Join-Path $env:TEMP "newDir"
+            New-Item $newDir -ItemType Directory -Force
+            Copy-Item "$PSScriptRoot\TestData\testfile.zip" "$newDir\testfile.zip" -Force -Verbose
+            Test-Path("$newDir\testfile.zip") | Should Be $True
+            Remove-ItemBackground $newDir
+            Test-Path("$newDir\testfile.zip") | Should Be $False
+            Test-Path($newDir) | Should Be $False
         }
     }
 }

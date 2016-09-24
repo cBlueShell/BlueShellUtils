@@ -12,7 +12,7 @@
 RootModule = 'BlueShellUtils.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.0.3'
+ModuleVersion = '0.0.4'
 
 # ID used to uniquely identify this module
 GUID = 'd105543b-38a6-4301-832a-441da25139e5'
@@ -66,7 +66,7 @@ FormatsToProcess = 'BlueShellUtils.Format.ps1xml'
 # NestedModules = @()
 
 # Functions to export from this module
-FunctionsToExport = @('Copy-RemoteItemLocally','Expand-ZipFile','Get-JavaProperties','Invoke-ProcessHelper','Set-JavaProperties')
+FunctionsToExport = @('Copy-RemoteItemLocally','Expand-ZipFile','Get-JavaProperties','Invoke-ProcessHelper','Remove-ItemBackground','Set-JavaProperties')
 
 # Cmdlets to export from this module
 # CmdletsToExport = '*'
@@ -104,7 +104,7 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        # ReleaseNotes = ''
+        ReleaseNotes = 'Adds Remove-ItemBackground cmdlet'
 
     } # End of PSData hashtable
 
