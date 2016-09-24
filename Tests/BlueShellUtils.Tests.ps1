@@ -22,6 +22,7 @@ Describe "BlueShellUtils Module PS$PSVersion" {
             $Module.Name | Should be $ModuleName
             $Commands = $Module.ExportedCommands.Keys
             $Commands -contains 'Invoke-ProcessHelper' | Should Be $True
+            $Commands -contains 'Invoke-Batch' | Should Be $True
             $Commands -contains 'Copy-RemoteItemLocally' | Should Be $True
             $Commands -contains 'Get-JavaProperties' | Should Be $True
             $Commands -contains 'Set-JavaProperties' | Should Be $True
