@@ -112,12 +112,32 @@ Task Build -Depends Test {
 Task Deploy -Depends Build {
     $lines
 
+    # Deploy to PS Gallery
     $Params = @{
         Path = $ProjectRoot
         Force = $true
         Recurse = $false # We keep psdeploy artifacts, avoid deploying those : )
     }
     Invoke-PSDeploy @Verbose @Params
+
+    # Deploy Locally/AppVeyor
+    # Create a clean to build the artifact
+    $artifactDir = "$PSScriptRoot\Artifact"
+    if (Test-Path($artifactDir)) {
+        Remove-Item $artifactDir -Recurse -Force -ErrorAction SilentlyContinue
+    }
+    New-Item -Path $artifactDir -ItemType Directory -Force
+
+    # Copy the correct items into the artifacts directory, filtering out the junk
+    Start-Process -FilePath 'robocopy.exe' -ArgumentList "`"$($PSScriptRoot)\$($env:BHProjectName)`" `"$($artifactDir)\$($env:BHProjectName)`" /S /R:1 /W:1 /XD Artifact .kitchen .git /XF .gitignore build.ps1 psake.ps1 *.yml *.xml" -Wait -NoNewWindow
+
+    # Create a zip file artifact
+    Compress-Archive -Path "$artifactDir\$env:BHProjectName" -DestinationPath "$artifactDir\$env:BHProjectName-$build_version.zip" -Force
+
+    if ($env:APPVEYOR) {
+        # Push the artifact into appveyor
+        $zip = Get-ChildItem -Path $artifactDir\*.zip |  % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
+    }
 
     "`n"
 }
