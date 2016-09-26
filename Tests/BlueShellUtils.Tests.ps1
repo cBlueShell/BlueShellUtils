@@ -51,6 +51,16 @@ Describe "Expand-ZipFile PS$PSVersion" {
             Remove-Item "$x\testfile.txt" -Force -Confirm:$False
         }
 
+        It 'Should extract the content of the zipfile and clean its target location' {
+            $targetDir = Join-Path $env:TEMP "TargetDirTest"
+            New-Item $targetDir -ItemType Directory -Force
+            Copy-Item "$PSScriptRoot\TestData\testfile.zip" "$targetDir\testfile.zip" -Force -Verbose
+            $x = Expand-ZipFile -Path "$PSScriptRoot\TestData\testfile.zip" -DestinationPath $targetDir -Force -Clean -Verbose
+            Test-Path("$x\testfile.zip") | Should Be $False
+            Test-Path("$x\testfile.txt") | Should Be $True
+            Remove-Item "$x\testfile.txt" -Force -Confirm:$False
+        }
+
         It 'Should extract the content of the zipfile to a random temporary location' {
             $x = Expand-ZipFile -Path "$PSScriptRoot\TestData\testfile.zip" -Verbose
             Test-Path("$x\testfile.txt") | Should Be $True

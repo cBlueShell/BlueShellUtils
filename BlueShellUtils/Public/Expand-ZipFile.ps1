@@ -35,15 +35,33 @@ Function Expand-ZipFile() {
         $DestinationPath,
 		
         [switch]
-        $Force
+        $Force,
+
+        [switch]
+        $Clean
     )
+
+    if ($DestinationPath -and !(Test-Path -Path $DestinationPath -PathType Container)) {
+        Write-Error "Invalid directory specified: $DestinationPath"
+        Return $null
+    }
 
     $TargetPath = $DestinationPath
 
     if (!$DestinationPath) {
         $folderName = ([char[]]([char]'a'..[char]'z') + 0..9 | Sort-Object {Get-Random})[0..10] -join ''
         $TargetPath = Join-Path $env:TEMP $folderName
+        New-Item -ItemType directory -Path $TargetPath | Out-Null
     }
+
+    if ($Clean) {
+        if (Test-Path -Path $TargetPath) {
+            Write-Verbose "Clearing directory before extracting archive: $TargetPath"
+            Remove-Item $TargetPath -Recurse -Force
+        }
+        New-Item -ItemType directory -Path $TargetPath | Out-Null
+    }
+    
 	
     $sevenZipExe = Get-SevenZipExecutable
     if (!([string]::IsNullOrEmpty($sevenZipExe)) -and (Test-Path($sevenZipExe))) {
