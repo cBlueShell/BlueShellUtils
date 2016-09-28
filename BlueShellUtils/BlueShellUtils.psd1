@@ -12,7 +12,7 @@
 RootModule = 'BlueShellUtils.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.0.5'
+ModuleVersion = '0.0.6'
 
 # ID used to uniquely identify this module
 GUID = 'd105543b-38a6-4301-832a-441da25139e5'
@@ -104,7 +104,7 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = 'Adds Invoke-Batch, Get-CredentialBaseName, and Get-UserBaseName CmdLets.  Suppors clean on Expand-ZipFile, Fixes Packaging Issue'
+        ReleaseNotes = 'Bug fixes'
 
     } # End of PSData hashtable
 

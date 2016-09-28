@@ -38,11 +38,12 @@ function Copy-RemoteItemLocally(){
         
         [switch] $Directory
     )
-	# Get temp file/folder if Destination is not providered    
+    [string] $RetDest = $Destination
+	# Get temp file/folder if Destination is not providered
     if (!$Destination) {
-    	$Destination = $env:TEMP
+    	$RetDest = $env:TEMP
     	if (!$Directory) {
-    		$Destination = (Join-Path $Destination -ChildPath (Split-Path -Path $Source -Leaf))
+    		$RetDest = (Join-Path $RetDest -ChildPath (Split-Path -Path $Source -Leaf))
     	}
     }
     
@@ -55,48 +56,55 @@ function Copy-RemoteItemLocally(){
     } catch [System.UnauthorizedAccessException] {
         $networkShare = $true
     }
-    # Go parent directory path for file copy 
-    $sourceDir = $Source
-    $destinationDir = $Destination
-    if(!$Directory){
-    	$sourceDir = (Split-Path($Source))
-    	$destinationDir = (Split-Path($destinationDir))
-    }
     
-    # Mapping networkshare drive
-    if($networkShare){
-	    Write-Verbose "Network Share detected, need to map"
-	    Use-NetworkShare -SharePath $sourceDir -SharePathCredential $SourceCredential -Ensure "Present" | Out-Null
-    }
-    
-    try {
-    	if (!$Directory) {
-			Write-Verbose ("Copy File $Source $Destination")
-			if(!(Test-Path($destinationDir))){
-				New-Item -ItemType Directory -Force -Path $destinationDir | Out-Null
-			}
-        	Copy-Item $Source $Destination -Force | Out-Null
-        } else {
-        	Write-Verbose ("Copy Directory $Source $Destination")
-        	if (!(Test-Path($destinationDir))) {
-				New-Item -ItemType Directory -Force -Path $destinationDir | Out-Null
-			}
-    		Get-ChildItem $sourceDir | ForEach-Object {
-                Copy-Item -Path $_.FullName -Destination  $destinationDir -Force -Container -Recurse | Out-Null
+    if (!$networkShare) {
+        Write-Verbose "File already accessible locally, returning existing source path"
+        $RetDest = $Source
+    } else {
+        # Go parent directory path for file copy 
+        $sourceDir = $Source
+        $destinationDir = $RetDest
+        if(!$Directory){
+            $sourceDir = (Split-Path($Source))
+            $destinationDir = (Split-Path($destinationDir))
+        }
+        
+        # Mapping networkshare drive
+        if($networkShare){
+            Write-Verbose "Network Share detected, need to map"
+            Use-NetworkShare -SharePath $sourceDir -SharePathCredential $SourceCredential -Ensure "Present" | Out-Null
+        }
+        
+        try {
+            if (!$Directory) {
+                Write-Verbose ("Copy File $Source $RetDest")
+                if(!(Test-Path($destinationDir))){
+                    New-Item -ItemType Directory -Force -Path $destinationDir | Out-Null
+                }
+                Copy-Item $Source $RetDest -Force | Out-Null
+            } else {
+                Write-Verbose ("Copy Directory $Source $RetDest")
+                if (!(Test-Path($destinationDir))) {
+                    New-Item -ItemType Directory -Force -Path $destinationDir | Out-Null
+                }
+                Get-ChildItem $sourceDir | ForEach-Object {
+                    Copy-Item -Path $_.FullName -Destination  $destinationDir -Force -Container -Recurse | Out-Null
+                }
             }
-    	}
-    } catch {
-        $ErrorMessage = $_.Exception.Message
-        Write-Error "An error occurred while copying files: $Source to $Destination \n Error Message: $ErrorMessage"
-    } finally {
-    	if ($networkShare) {
-	        try {
-	            Use-NetworkShare -SharePath $sourceDir -SharePathCredential $SourceCredential -Ensure "Absent" | Out-Null
-	        } catch {
-	            Write-Warning "Unable to disconnect share: $Source"
-	        }
-    	}
+        } catch {
+            $ErrorMessage = $_.Exception.Message
+            Write-Error "An error occurred while copying files: $Source to $RetDest \n Error Message: $ErrorMessage"
+        } finally {
+            if ($networkShare) {
+                try {
+                    Use-NetworkShare -SharePath $sourceDir -SharePathCredential $SourceCredential -Ensure "Absent" | Out-Null
+                } catch {
+                    Write-Warning "Unable to disconnect share: $Source"
+                }
+            }
+        }
     }
     
-    return $Destination
+    
+    return $RetDest
 }
