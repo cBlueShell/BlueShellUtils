@@ -12,7 +12,7 @@
 RootModule = 'BlueShellUtils.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.0.6'
+ModuleVersion = '0.0.7'
 
 # ID used to uniquely identify this module
 GUID = 'd105543b-38a6-4301-832a-441da25139e5'
@@ -104,7 +104,7 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = 'Bug fixes (avoid copying items that are already accessible)'
+        ReleaseNotes = 'Removes standard enums, as they could not be leveraged by grand-parent modules'
 
     } # End of PSData hashtable
 
