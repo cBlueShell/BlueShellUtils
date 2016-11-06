@@ -90,3 +90,16 @@ Describe "Remove-ItemBackground PS$PSVersion" {
         }
     }
 }
+
+Describe "Copy-WebFileLocally PS$PSVersion" {
+    InModuleScope $ModuleName {
+        It 'Should download a file and copy to a local destination' {
+            $newDir = Join-Path $env:TEMP "newDownloadDir"
+            New-Item $newDir -ItemType Directory -Force
+            $downloadedFile = Copy-WebFileLocally "http://speedtest.ftp.otenet.gr/files/test100k.db" -Verbose
+            Test-Path $downloadedFile | Should Be $True
+            Remove-ItemBackground $newDir
+            Test-Path($newDir) | Should Be $False
+        }
+    }
+}

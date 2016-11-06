@@ -13,7 +13,7 @@ Properties {
     $lines = '----------------------------------------------------------------------'
 
     # List of the PowerShell scripts to test
-    $filesToTest = Get-ChildItem *.psm1,*.psd1,*.ps1 -Recurse -Exclude *build.ps1,*.pester.ps1,*Tests.ps1,*psake.ps1,*.psdeploy.ps1
+    $filesToTest = Get-ChildItem *.psm1,*.psd1,*.ps1 -Recurse -Exclude *build.ps1,*.pester.ps1,*.Tests.ps1,*psake.ps1,*.psdeploy.ps1,*_Example.ps1 | Where {$_.FullName -notlike "*\Artifact\*"}
 
     $Verbose = @{}
     if($ENV:BHCommitMessage -match "!verbose") {
@@ -25,6 +25,11 @@ Task Default -depends Init, Analyze, Test, Build, Deploy
 
 Task Init {
     $lines
+    # Clean artifact dir
+    $artifactDir = "$PSScriptRoot\Artifact"
+    if (Test-Path $artifactDir) {
+        Remove-Item $artifactDir -Recurse -Force -ErrorAction SilentlyContinue
+    }
     Set-Location $ProjectRoot
     "Build System Details:"
     Get-Item ENV:BH*
@@ -71,7 +76,7 @@ Task Analyze {
     "`n"
 }
 
-Task Test -Depends Init, Analyze  {
+Task Test -Depends Init, Analyze {
     $lines
     "`n`tSTATUS: Testing with PowerShell $PSVersion"
 
@@ -120,16 +125,15 @@ Task Deploy -Depends Build {
     }
     Invoke-PSDeploy @Verbose @Params
 
-    # Deploy Locally/AppVeyor
     # Create a clean to build the artifact
     $artifactDir = "$PSScriptRoot\Artifact"
-    if (Test-Path($artifactDir)) {
+    if (Test-Path $artifactDir) {
         Remove-Item $artifactDir -Recurse -Force -ErrorAction SilentlyContinue
     }
     New-Item -Path $artifactDir -ItemType Directory -Force
 
     # Copy the correct items into the artifacts directory, filtering out the junk
-    Start-Process -FilePath 'robocopy.exe' -ArgumentList "`"$($PSScriptRoot)\$($env:BHProjectName)`" `"$($artifactDir)\$($env:BHProjectName)`" /S /R:1 /W:1 /XD Artifact .kitchen .git /XF .gitignore build.ps1 psake.ps1 *.yml *.xml" -Wait -NoNewWindow
+    Start-Process -FilePath 'robocopy.exe' -ArgumentList "`"$($PSScriptRoot)\$env:BHProjectName`" `"$artifactDir\$env:BHProjectName`" /S /R:1 /W:1 /XD Artifact .kitchen .git /XF .gitignore build.ps1 psake.ps1 deploy.psdeploy.ps1 *.Tests.ps1 *.yml *.xml" -Wait -NoNewWindow
 
     # Create a zip file artifact
     Compress-Archive -Path "$artifactDir\$env:BHProjectName" -DestinationPath "$artifactDir\$env:BHProjectName-$build_version.zip" -Force
